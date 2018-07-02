@@ -10,13 +10,18 @@ from gooey.gui.three_to_four import Classes, Constants
 
 
 class CalendarDlg(wx.Dialog):
-  def __init__(self, parent):
+  default_args = {}
+  default_value_arg = "dt"
+
+  def __init__(self, parent, **kwargs):
     wx.Dialog.__init__(self, parent)
 
     self.SetBackgroundColour('#ffffff')
 
-    self.ok_button = wx.Button(self, wx.ID_OK, label=_('Ok'))
-    self.datepicker = Classes.DatePickerCtrl(self, style=Constants.WX_DP_DROPDOWN)
+    self.ok_button = wx.Button(self, wx.ID_OK, label='Ok')
+    self.datepicker = Classes.DatePickerCtrl(self,
+                                             style=Constants.WX_DP_DROPDOWN,
+                                             **kwargs)
 
     vertical_container = wx.BoxSizer(wx.VERTICAL)
     vertical_container.AddSpacer(10)
@@ -47,6 +52,7 @@ class CalendarDlg(wx.Dialog):
 
   def GetPath(self):
     return self.datepicker.GetValue().FormatISODate()
+
 
 
 

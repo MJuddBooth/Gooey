@@ -10,7 +10,7 @@ class BaseGuiComponent(object):
 
   widget_class = None
 
-  def __init__(self, parent, title, msg, choices=None):
+  def __init__(self, parent, title, msg, choices=None, default=None):
     '''
     :param data: field info (title, help, etc..)
     :param widget_pack: internal wxWidgets to render
@@ -23,6 +23,7 @@ class BaseGuiComponent(object):
     self.title = None
     self.help_msg = None
     self.choices = [str(c) for c in choices] if choices is not None else None
+    self.default = default
 
     # Internal WidgetPack set in subclasses
 
@@ -36,7 +37,7 @@ class BaseGuiComponent(object):
     self.title = self.format_title(self.panel, title)
     self.help_msg = self.format_help_msg(self.panel, msg)
     self.help_msg.SetMinSize((0, -1))
-    core_widget_set = self.widget_pack.build(self.panel, {}, self.choices)
+    core_widget_set = self.widget_pack.build(self.panel, {}, self.choices, self.default)
 
     vertical_container = wx.BoxSizer(wx.VERTICAL)
 
@@ -113,7 +114,7 @@ class BaseGuiComponent(object):
 
 class CheckBox(BaseGuiComponent):
 
-  def __init__(self, parent, title, msg, choices=None):
+  def __init__(self, parent, title, msg, choices=None, default=None):
     BaseGuiComponent.__init__(self, parent, title, msg)
 
   def do_layout(self, parent, title, msg):
@@ -158,7 +159,7 @@ class CheckBox(BaseGuiComponent):
 
 
 class RadioGroup(object):
-  def __init__(self, parent, title, msg, choices=None):
+  def __init__(self, parent, title, msg, choices=None, default=None):
     self.panel = None
 
     self.radio_buttons = []
@@ -216,8 +217,6 @@ class RadioGroup(object):
 
   def set_value(self, val):
     pass
-
-
 
 def build_subclass(name, widget_class):
   # this seemed faster than typing class X a bunch
