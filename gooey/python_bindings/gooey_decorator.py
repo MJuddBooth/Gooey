@@ -86,6 +86,11 @@ def Gooey(f=None,
     return inner2
 
   def run_without_gooey(func):
+    import inspect
+    args = inspect.getargspec(func)
+
+    if "ignore_gooey" in args.args:
+      return lambda: func(ignore_gooey=True)
     return lambda: func()
 
   if IGNORE_COMMAND in sys.argv:
