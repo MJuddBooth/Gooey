@@ -1,5 +1,15 @@
-from gooey import Gooey
-from gooey import GooeyParser
+"""
+"""
+
+# gooey now requires wx4, and debian has wx3 as the default for py2, so
+# force the correct version and load here to be safe
+
+import wxversion
+x = wxversion.getInstalled()
+wxversion.select('4')
+import wx # @UnusedImport
+
+from gooey import Gooey, GooeyParser
 
 
 @Gooey(
@@ -8,7 +18,7 @@ from gooey import GooeyParser
     dump_build_config=True,
     show_success_modal=False,
     force_stop_is_error=False,
-    language='chinese'
+    language='english'
 )
 def main():
     desc = "Example application to show Gooey's various widgets"
