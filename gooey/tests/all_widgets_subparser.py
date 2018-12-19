@@ -2,6 +2,14 @@
 Example program to demonstrate Gooey's presentation of subparsers
 """
 
+# gooey now requires wx4, and debian has wx3 as the default for py2, so
+# force the correct version and load here to be safe
+
+import wxversion
+x = wxversion.getInstalled()
+wxversion.select('4')
+import wx # @UnusedImport
+
 from gooey import Gooey, GooeyParser
 
 running = True
