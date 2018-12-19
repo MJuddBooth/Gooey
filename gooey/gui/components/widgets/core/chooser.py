@@ -36,6 +36,11 @@ class Chooser(wx.Panel):
 
     def spawnDialog(self, event):
         fd = self.getDialog()
+        try:
+            self.set_defaults(fd)
+        except Exception as e: # For debugging @UnusedVariable
+            pass
+
         if fd.ShowModal() == wx.ID_CANCEL:
             return
         self.processResult(self.getResult(fd))
@@ -62,16 +67,24 @@ class Chooser(wx.Panel):
 
 class FileChooser(Chooser):
     """ Retrieve an existing file from the system """
+    set_default_method = "SetFilename"
+
     def getDialog(self):
         return wx.FileDialog(self, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
 
+    def set_defaults(self, dialog):
+        filename = self.getValue()
+        if filename:
+            dirs, basename = os.path.split(filename)
+            dialog.SetDirectory(dirs)
+            dialog.SetFilename(basename)
 
 class MultiFileChooser(Chooser):
     """ Retrieve an multiple files from the system """
     def getDialog(self):
         return wx.FileDialog(self, "Open Files" ,style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE)
     def getResult(self, dialog):
-        return os.pathsep.join(dialog.GetPaths()) 
+        return os.pathsep.join(dialog.GetPaths())
 
 
 class FileSaver(Chooser):
@@ -88,7 +101,10 @@ class FileSaver(Chooser):
 class DirChooser(Chooser):
     """ Retrieve a path to the supplied directory """
     def getDialog(self):
-        return wx.DirDialog(self, message=_('choose_folder'))
+        return wx.DirDialog(self, message=_('choose_folder'),
+                            defaultPath=self.getValue())
+    def set_defaults(self, fd):
+        fd.SetPath(self.getValue())
 
 
 class DateChooser(Chooser):
@@ -101,6 +117,17 @@ class DateChooser(Chooser):
     def getDialog(self):
         return CalendarDlg(self)
 
+    def set_defaults(self, dialog):
+        date = self.getValue()
+        if date:
+            if isinstance(date, basestring):
+                wxdate = wx.DateTime()
+                if wxdate.ParseDateTime(date) < 0:
+                    wxdate.ParseDate(date)
+            else:
+                y, m, d = date.year, date.month, date.day
+                wxdate = wx.DateTimeFromDMY(d, m - 1, y)
+            dialog.datepicker.SetValue(wxdate)
 
 
 
